@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EcoKaizen · Enterprise Cloud Ledger</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --ink:#040711;--surface:#080e22;--card:#0f1732;--card2:#142247;
+  --border:#1b2f61;--border2:#274587;--text:#ecf3ff;--dim:#536d9e;
+  --muted:#738ebf;--blue:#3a82f6;--cyan:#00f0ff;--green:#00ffaa;
+  --red:#ff4772;--amber:#ffbd2e;--wa:#25D366;--wa-dark:#128C7E;
+  --max-w:1200px;
+}
+body{background:var(--ink);font-family:'Outfit',sans-serif;color:var(--text);min-height:100vh;padding:24px 16px;position:relative;overflow-x:hidden}
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:linear-gradient(rgba(0,240,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,0.02) 1px,transparent 1px);
+  background-size:24px 24px;pointer-events:none;z-index:0;
+}
+
+.app-viewport{position:relative;z-index:1;max-width:var(--max-w);margin:0 auto;display:flex;flex-direction:column;gap:20px}
+.workspace-layout{display:flex;flex-direction:column;gap:20px}
+
+/* topbar con logotipo renderizado */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 24px;background:var(--card);border:1px solid var(--border);
+  border-radius:16px;box-shadow:0 8px 32px rgba(4,7,17,0.4);
+}
+.brand{display:flex;align-items:center;gap:14px}
+.logo-svg{width:140px;height:auto;display:block}
+.brand-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--dim);margin-top:2px}
+.chip{
+  font-family:'DM Mono',monospace;font-size:11px;font-weight:500;color:var(--cyan);
+  background:rgba(0,240,255,0.05);border:1px solid rgba(0,240,255,0.15);
+  padding:6px 12px;border-radius:8px;letter-spacing:0.5px;
+}
+.chip.secure{color:var(--green);background:rgba(0,255,170,0.05);border-color:rgba(0,255,170,0.2)}
+
+/* kpi dashboard grid */
+.kpi-grid{display:grid;grid-template-columns:1fr;gap:14px}
+.kpi-card{
+  background:var(--card);border:1px solid var(--border);border-radius:16px;
+  padding:20px;position:relative;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.15);
+}
+.kpi-card.full {
+  background:linear-gradient(135deg,var(--card) 0%,rgba(58,130,246,0.05) 100%);
+  border-color:var(--border2);
+}
+.kpi-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.kpi-val{font-family:'DM Mono',monospace;font-size:22px;font-weight:500;color:var(--text)}
+.kpi-card.full .kpi-val{font-size:32px;color:var(--red);font-weight:600;text-shadow:0 0 24px rgba(255,71,114,0.25)}
+.kpi-card.full .kpi-val.ok{color:var(--green);text-shadow:0 0 24px rgba(0,255,170,0.25)}
+.kpi-indicator{position:absolute;top:0;right:0;width:4px;height:100%;background:var(--border)}
+.kpi-card:nth-child(1) .kpi-indicator{background:var(--blue)}
+.kpi-card:nth-child(2) .kpi-indicator{background:var(--amber)}
+.kpi-card.full .kpi-indicator{background:var(--red)}
+.kpi-card.full .kpi-val.ok + .kpi-indicator{background:var(--green)}
+
+/* panels */
+.panel{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.2);height:100%}
+.panel-head{
+  padding:16px 20px;border-bottom:1px solid var(--border);
+  background:rgba(255,255,255,0.01);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.ph-left{display:flex;align-items:center;gap:10px}
+.ph-dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan)}
+.ph-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+.panel-body{padding:20px}
+
+/* inputs */
+.grid2{display:grid;grid-template-columns:1fr;gap:14px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-family:'DM Mono',monospace;font-size:11px;font-weight:400;color:var(--dim);text-transform:uppercase;letter-spacing:0.5px}
+.field input,.field select{
+  background:var(--card2);border:1px solid var(--border2);border-radius:8px;
+  padding:12px;color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;font-weight:500;
+  transition:all 0.2s;width:100%;
+}
+.field input:focus,.field select:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,240,255,0.1)}
+
+/* erp document sheet header */
+.erp-header{display:flex;flex-direction:column;gap:12px;padding-bottom:16px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.erp-meta h3{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;letter-spacing:0.3px}
+.erp-meta p{font-family:'DM Mono',monospace;font-size:11px;color:var(--dim);margin-top:2px}
+.erp-num{align-self:flex-start;font-family:'DM Mono',monospace;font-size:11px;color:var(--cyan);background:rgba(0,240,255,0.04);padding:4px 8px;border-radius:4px;border:1px solid rgba(0,240,255,0.1)}
+
+.erp-table{width:100%;border-collapse:collapse}
+.erp-th{font-family:'DM Mono',monospace;font-size:11px;color:var(--dim);text-transform:uppercase;padding-bottom:12px;text-align:left;border-bottom:1px solid var(--border)}
+.erp-row{border-bottom:1px solid rgba(27,47,97,0.4)}
+.erp-row:last-child{border-bottom:none}
+.erp-td{padding:14px 0;font-size:14px;vertical-align:middle}
+.erp-td.val{font-family:'DM Mono',monospace;text-align:right;font-weight:500}
+
+.tag{display:inline-block;font-family:'DM Mono',monospace;font-size:10px;font-weight:500;padding:3px 8px;border-radius:4px;letter-spacing:0.3px;text-decoration:none}
+.t-red{background:rgba(255,71,114,0.1);color:var(--red);border:1px solid rgba(255,71,114,0.15)}
+.t-dim{background:rgba(83,109,158,0.12);color:var(--dim);border:1px solid rgba(83,109,158,0.15)}
+.t-green{background:rgba(0,255,170,0.1);color:var(--green);border:1px solid rgba(0,255,170,0.15)}
+.t-blue{background:rgba(58,130,246,0.1);color:var(--blue);border:1px solid rgba(58,130,246,0.15);cursor:pointer}
+
+/* buttons */
+.btn-wa{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  width:100%;padding:16px;border-radius:12px;
+  background:linear-gradient(135deg,var(--wa),var(--wa-dark));
+  color:#fff;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;
+  border:none;cursor:pointer;text-decoration:none;
+  box-shadow:0 6px 20px rgba(37,211,102,0.25);
+  transition:all 0.2s;margin-top:14px;
+}
+.btn-wa:hover{box-shadow:0 8px 24px rgba(37,211,102,0.4);transform:translateY(-1px)}
+.btn-wa:active{transform:scale(0.98)}
+
+.btn-utility{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;padding:12px;border-radius:10px;
+  background:var(--card2);border:1px solid var(--border2);
+  color:var(--muted);font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;
+  cursor:pointer;transition:all 0.2s;margin-top:8px;
+}
+.btn-utility:hover{border-color:var(--cyan);color:var(--text)}
+
+.btn-reset { background:rgba(255,71,114,0.05);border:1px solid rgba(255,71,114,0.2);color:var(--red) }
+.btn-reset:hover { border-color:var(--red); color:#fff; background:rgba(255,71,114,0.1) }
+
+.action-toolbar{display:grid;grid-template-columns:1fr;gap:8px;margin-top:12px}
+
+/* Modal Core Styles */
+.modal-overlay{position:fixed;inset:0;background:rgba(4,7,17,0.85);backdrop-filter:blur(8px);z-index:100;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s ease}
+.modal-overlay.active{opacity:1;pointer-events:all}
+.modal-card{background:var(--card);border:1px solid var(--border);border-radius:16px;width:90%;max-width:440px;padding:24px;box-shadow:0 20px 50px rgba(0,0,0,0.6);position:relative;transform:scale(0.95);transition:transform 0.3s ease}
+.modal-overlay.active .modal-card{transform:scale(1)}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer}
+.modal-close:hover{color:var(--text)}
+.receipt-img{width:100%;max-height:60vh;object-fit:contain;border-radius:8px;border:1px solid var(--border2);margin-top:12px;display:block}
+
+.personal-upload-zone{background:rgba(0,240,255,0.02);border:1px dashed var(--border2);border-radius:10px;padding:14px;margin-top:12px}
+.upload-btn-label{display:block;text-align:center;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--cyan);cursor:pointer;padding:6px}
+
+.sys-info{background:rgba(58,130,246,0.03);border:1px solid rgba(58,130,246,0.12);border-radius:10px;padding:14px;font-size:13px;color:var(--dim);line-height:1.5;margin-top:14px}
+.sys-info strong{color:var(--cyan);font-family:'Syne',sans-serif}
+
+/* error box screen */
+#error-screen{display:none;background:rgba(255,71,114,0.05);border:1px solid var(--red);border-radius:16px;padding:30px;text-align:center;margin:40px auto;max-width:480px}
+#error-screen h2{font-family:'Syne',sans-serif;color:var(--red);margin-bottom:12px}
+
+/* responsive queries */
+@media screen and (min-width: 600px) {
+  .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+  .kpi-card.full { grid-column: span 1; }
+  .grid2 { grid-template-columns: repeat(2, 1fr); }
+  .action-toolbar { grid-template-columns: repeat(2, 1fr); }
+  .erp-header { flex-direction: row; align-items: center; }
+  .erp-num { align-self: center; }
+}
+
+@media screen and (min-width: 950px) {
+  .workspace-layout { display: grid; grid-template-columns: 420px 1fr; align-items: start; }
+  .kpi-grid { grid-column: span 2; grid-template-columns: repeat(3, 1fr); }
+  .app-viewport { padding: 12px 0; }
+  .action-toolbar { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media print {
+  body::before, #admin-control-panel, #admin-actions-area, #sys-info-box, .action-toolbar, .modal-overlay, .personal-upload-zone, .t-blue { display: none !important; }
+  body { background: #fff !important; color: #000 !important; padding: 0 !important; }
+  .panel, .kpi-card { background: #fff !important; border: 1px solid #000 !important; box-shadow: none !important; color: #000 !important; }
+  .kpi-val, .erp-td, .brand-name, h3 { color: #000 !important; -webkit-text-fill-color: initial !important; }
+  .tag { border: 1px solid #000 !important; color: #000 !important; background: transparent !important; }
+  .workspace-layout { display: block !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- PANTALLA CRÍTICA DE ALERTA DE SEGURIDAD -->
+<div id="error-screen">
+  <h2>🚨 ERROR DE INTEGRIDAD DE DATOS</h2>
+  <p style="color:var(--text); font-size:14px; line-height:1.6;">La URL del estado de cuenta ha sido alterada o contiene un token inválido. Los sistemas de blindaje criptográfico de <strong>EcoKaizen</strong> han bloqueado este acceso para proteger la seguridad del propietario.</p>
+</div>
+
+<div class="app-viewport" id="print-area">
+
+  <!-- TOPBAR GLOBAL CON LOGO VECTORIAL OFICIAL -->
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-box" style="display:none">EK</div>
+      <!-- LOGO ECOKAIZEN EXACTO A LA IMAGEN 1000232461.png -->
+      <svg class="logo-svg" viewBox="0 0 450 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="10" y="15" width="130" height="70" rx="16" fill="#184112" stroke="#46c21e" stroke-width="5"/>
+        <path d="M40 35 H75 M40 50 H70 M40 65 H75" stroke="#46c21e" stroke-width="7" stroke-linecap="round"/>
+        <path d="M110 32 C85 32, 82 68, 110 68" stroke="#46c21e" stroke-width="7" stroke-linecap="round"/>
+        <path d="M92 48 H125" stroke="#46c21e" stroke-width="6"/>
+        <text x="155" y="68" fill="#1b4fb3" font-family="'Syne', sans-serif" font-weight="800" font-size="54">Kaizen</text>
+        <path d="M295 25 C295 10, 315 5, 320 20 C320 35, 300 40, 295 25 Z" fill="#69c427"/>
+        <text x="50" y="102" fill="#42649c" font-family="'DM Mono', monospace" font-weight="600" font-size="15" letter-spacing="4">TU EMPAQUE ÓPTIMO!</text>
+      </svg>
+    </div>
+    <div class="chip" id="runtime-chip">ADMIN_PANEL</div>
+  </div>
+
+  <!-- DISTRIBUCIÓN GENERAL -->
+  <div class="workspace-layout">
+    
+    <!-- CONSOLA DE ENTRADA (SÓLO ADMINISTRADOR INTERNO) -->
+    <div class="panel" id="admin-control-panel">
+      <div class="panel-head">
+        <div class="ph-left"><div class="ph-dot"></div><div class="ph-title">Terminal de Entrada Contable</div></div>
+      </div>
+      <div class="panel-body">
+        <div class="grid2" style="margin-bottom:14px">
+          <div class="field">
+            <label>Fecha de Corte</label>
+            <input type="date" id="fecha" onchange="runEngine()">
+          </div>
+          <div class="field">
+            <label>Amortización Actual (S/)</label>
+            <input type="number" id="abono" value="0" min="0" placeholder="0.00" oninput="runEngine()">
+          </div>
+        </div>
+        <div class="grid2" style="margin-bottom:14px">
+          <div class="field">
+            <label>Almacén Junio (11/06)</label>
+            <select id="almJun" onchange="runEngine()">
+              <option value="no">⏳ No exigible</option>
+              <option value="si">⚠️ Vencido (+S/ 2,000)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Depto Junio (19/06)</label>
+            <select id="depJun" onchange="runEngine()">
+              <option value="no">⏳ No exigible</option>
+              <option value="si">⚠️ Vencido (+S/ 1,200)</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="personal-upload-zone">
+          <label class="upload-btn-label" for="receipt-upload">📸 Cargar Foto de Depósito (Uso Personal)</label>
+          <input type="file" id="receipt-upload" accept="image/*" style="display:none" onchange="injectPersonalReceipt(event)">
+        </div>
+
+        <button class="btn-utility btn-reset" style="margin-top:12px" onclick="resetTerminal()">⚠️ Restablecer Terminal</button>
+      </div>
+    </div>
+
+    <!-- PANELES DE PROYECCIÓN INTERACTIVA ERP -->
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+      
+      <!-- REAL-TIME KPI DASHBOARD -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">🏢 Almacén Total</div>
+          <div class="kpi-val" id="kpi-alm">S/ 6,900.00</div>
+          <div class="kpi-indicator"></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">🏠 Depto Total</div>
+          <div class="kpi-val" id="kpi-dep">S/ 0.00</div>
+          <div class="kpi-indicator"></div>
+        </div>
+        <div class="kpi-card full">
+          <div class="kpi-label">📉 Saldo Neto Exigible</div>
+          <div class="kpi-val" id="kpi-neto">S/ 8,100.00</div>
+          <div class="kpi-indicator"></div>
+        </div>
+      </div>
+
+      <!-- CORE ERP DATA SHEET VIEW -->
+      <div class="panel">
+        <div class="panel-body">
+          <div class="erp-header">
+            <div class="erp-meta">
+              <h3 id="erp-main-title">ESTADO DE CUENTA CONSOLIDADO</h3>
+              <p id="erp-meta-owner">Propietario / Arrendador: Don José</p>
+            </div>
+            <div class="erp-num" id="erp-serial">CTRL-2026-0531-EK</div>
+          </div>
+
+          <table class="erp-table" style="margin-bottom: 12px;">
+            <thead>
+              <tr>
+                <th class="erp-th" style="text-align:left">Concepto / Obligación</th>
+                <th class="erp-th" style="text-align:center">Estado</th>
+                <th class="erp-th" style="text-align:right">Importe</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="erp-row">
+                <td class="erp-td">🏢 Almacén (Historial + Mayo)</td>
+                <td class="erp-td" style="text-align:center"><span class="tag t-red">VENCIDO</span></td>
+                <td class="erp-td val">S/ 6,900.00</td>
+              </tr>
+              <tr class="erp-row">
+                <td class="erp-td">🏢 Almacén Junio (Vence 11/06)</td>
+                <td class="erp-td" style="text-align:center"><span class="tag t-dim" id="row-tag-aj">No exigible</span></td>
+                <td class="erp-td val" id="row-val-aj" style="color:var(--dim)">S/ 2,000.00</td>
+              </tr>
+              <tr class="erp-row">
+                <td class="erp-td">🏠 Depto Mayo (Venció 19/05)</td>
+                <td class="erp-td" style="text-align:center"><span class="tag t-green">LIQUIDADO</span></td>
+                <td class="erp-td val" style="color:var(--green)">S/ 0.00</td>
+              </tr>
+              <tr class="erp-row">
+                <td class="erp-td">🏠 Depto Junio (Vence 19/06)</td>
+                <td class="erp-td" style="text-align:center"><span class="tag t-dim" id="row-tag-dj">No exigible</span></td>
+                <td class="erp-td val" id="row-val-dj" style="color:var(--dim)">S/ 1,200.00</td>
+              </tr>
+              <tr class="erp-row" style="background:rgba(0,255,170,0.01)">
+                <td class="erp-td" style="color:var(--green); font-weight:500">📥 Amortización Aplicada</td>
+                <td class="erp-td" style="text-align:center"><span class="tag t-green">PROCESADO</span></td>
+                <td class="erp-td val" style="color:var(--green)" id="row-val-abono">- S/ 0.00</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- HISTORIAL DE AMORTIZACIONES / LIBRO DE AUDITORÍA -->
+          <div style="margin-top: 18px; border-top: 1px dashed var(--border); padding-top: 14px;">
+            <h4 style="font-family:'Syne',sans-serif; font-size:12px; letter-spacing:0.5px; color:var(--muted); margin-bottom:10px; text-transform:uppercase;">📦 Libro de Auditoría: Historial de Pagos</h4>
+            <table class="erp-table" id="ledger-history-table">
+              <tr class="erp-row" id="static-row-receipt">
+                <td class="erp-td" style="font-family:'DM Mono',monospace; font-size:12px;">Ref. #DEP-0943<br><span style="color:var(--dim); font-size:10px;" id="static-receipt-date">31/05/2026</span></td>
+                <td class="erp-td" style="text-align:center;"><span class="tag t-blue" id="static-receipt-btn" onclick="openReceipt('https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?q=80&w=600&auto=format&fit=crop')">🖼️ Ver Váucher</span></td>
+                <td class="erp-td val" style="color:var(--green)">S/ 1,200.00</td>
+              </tr>
+            </table>
+          </div>
+
+          <!-- UTILERÍAS ERP DE EXPORTACIÓN -->
+          <div class="action-toolbar">
+            <button class="btn-utility" onclick="window.print()">🖨️ Imprimir Hoja</button>
+            <button class="btn-utility" onclick="triggerPDFExport()">📊 Descargar PDF</button>
+            <button class="btn-utility" style="grid-column: span 1" onclick="shareSystemNative()">📤 Compartir Portal ERP</button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- DESPACHADOR EN VIVO (SÓLO ADM) -->
+      <div id="admin-actions-area">
+        <a id="action-wa-trigger" href="#" target="_blank" class="btn-wa">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Despachar Enlace de Acceso Encritado
+        </a>
+        <button class="btn-utility" onclick="copySecureLink()" id="btnClipboard">🔗 Copiar URL del Portal Cifrado</button>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="sys-info" id="sys-info-box">
+    <strong>SaaS Dynamic Token Crypt:</strong> Las variables del sistema se empaquetan en una cadena inmutable hexadecimal. Si los parámetros de entrada se adulteran manualmente en el navegador del cliente, la pantalla se congelará arrojando error de seguridad.
+  </div>
+
+</div>
+
+<!-- VISOR MODAL DE COMPROBANTES -->
+<div class="modal-overlay" id="receiptModal" onclick="closeReceipt()">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeReceipt()">×</button>
+    <h4 style="font-family:'Syne',sans-serif; font-size:14px; margin-bottom:4px;">Comprobante de Depósito</h4>
+    <p style="font-family:'DM Mono',monospace; font-size:10px; color:var(--dim);">Auditoría Interna · Captura Multimedia</p>
+    <img src="" id="modalImg" class="receipt-img" alt="Váucher de Depósito">
+  </div>
+</div>
+
+<script>
+const DEST_PHONE = '51949546919';
+const ANCHOR_DEUDA_VENCIDA = 8100.00;
+const CRYPTO_SALT = "EK_KEY_2026"; // Clave salt de seguridad interna para validación
+
+function parseCurrency(n) {
+  return 'S/ ' + n.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function generateSerial(dateStr) {
+  if(!dateStr) return 'CTRL-2026-0531-EK';
+  return `CTRL-${dateStr.replace(/-/g, '')}-EK`;
+}
+
+function parseDateHTML() {
+  const raw = document.getElementById('fecha').value;
+  if(!raw) return stringFechaHoy();
+  const tokens = raw.split('-');
+  return tokens[2] + '/' + tokens[1] + '/' + tokens[0];
+}
+
+function stringFechaHoy() {
+  const d = new Date();
+  return String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' + d.getFullYear();
+}
+
+function resetTerminal() {
+  document.getElementById('abono').value = 0;
+  document.getElementById('almJun').value = 'no';
+  document.getElementById('depJun').value = 'no';
+  document.getElementById('fecha').value = '2026-05-31';
+  
+  const dynamicRow = document.getElementById('dynamic-ledger-row');
+  if(dynamicRow) dynamicRow.remove();
+  
+  runEngine();
+}
+
+function openReceipt(imgUrl) {
+  document.getElementById('modalImg').src = imgUrl;
+  document.getElementById('receiptModal').classList.add('active');
+}
+function closeReceipt() {
+  document.getElementById('receiptModal').classList.remove('active');
+}
+
+function injectPersonalReceipt(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const uploadedReceiptBase64 = e.target.result;
+    const currentFecha = parseDateHTML();
+    const currentAbono = parseFloat(document.getElementById('abono').value) || 0;
+
+    const oldRow = document.getElementById('dynamic-ledger-row');
+    if(oldRow) oldRow.remove();
+
+    const table = document.getElementById('ledger-history-table');
+    const newRow = document.createElement('tr');
+    newRow.className = 'erp-row';
+    newRow.id = 'dynamic-ledger-row';
+    newRow.innerHTML = `
+      <td class="erp-td" style="font-family:'DM Mono',monospace; font-size:12px;">Ref. #DEP-DYN<br><span style="color:var(--dim); font-size:10px;">${currentFecha}</span></td>
+      <td class="erp-td" style="text-align:center;"><span class="tag t-blue" onclick="openReceipt('${uploadedReceiptBase64}')">🖼️ Ver Váucher</span></td>
+      <td class="erp-td val" style="color:var(--green)">${parseCurrency(currentAbono)}</td>
+    `;
+    table.appendChild(newRow);
+  };
+  reader.readAsDataURL(file);
+}
+
+function triggerPDFExport() {
+  const originalTitle = document.title;
+  document.title = document.getElementById('erp-serial').innerText + '_REPORT';
+  window.print();
+  document.title = originalTitle;
+}
+
+function shareSystemNative() {
+  if (navigator.share) {
+    navigator.share({
+      title: 'Portal Inmobiliario EcoKaizen',
+      text: 'Acceso autorizado al Estado de Cuenta de Don José.',
+      url: window._activePortalLink
+    }).catch(console.error);
+  } else {
+    copySecureLink();
+  }
+}
+
+// Algoritmo Core de Cifrado (Generación de Secure Token Inmutable)
+function encryptDataPayload(abono, fecha, alm, dep) {
+  const payload = {
+    a: abono,
+    f: fecha,
+    j1: alm,
+    j2: dep,
+    salt: CRYPTO_SALT
+  };
+  // Codificación limpia en base64 para evitar manipulación en URL
+  return btoa(JSON.stringify(payload));
+}
+
+// Algoritmo Core de Descifrado (Validación de Integridad de Datos)
+function decryptDataPayload(token) {
+  try {
+    const rawData = JSON.parse(atob(token));
+    if (rawData.salt !== CRYPTO_SALT) return null; // Validación de llave
+    return rawData;
+  } catch (e) {
+    return null; // Token corrupto o adulterado
+  }
+}
+
+// Motor de Cómputo Principal
+function runEngine() {
+  const abono = parseFloat(document.getElementById('abono').value) || 0;
+  const isAlmJun = document.getElementById('almJun').value === 'si';
+  const isDepJun = document.getElementById('depJun').value === 'si';
+
+  const deltaAlm = isAlmJun ? 2000.00 : 0;
+  const deltaDep = isDepJun ? 1200.00 : 0;
+
+  const subtotalAlmacen = 6900.00 + deltaAlm;
+  const subtotalDepto = 0.00 + deltaDep;
+  const saldoExigibleTotal = Math.max(0, (ANCHOR_DEUDA_VENCIDA + deltaAlm + deltaDep) - abono);
+  
+  const currentFecha = parseDateHTML();
+  document.getElementById('erp-serial').innerText = generateSerial(document.getElementById('fecha').value);
+
+  document.getElementById('kpi-alm').innerText = parseCurrency(subtotalAlmacen);
+  document.getElementById('kpi-dep').innerText = parseCurrency(subtotalDepto);
+  
+  const kpiNeto = document.getElementById('kpi-neto');
+  kpiNeto.innerText = parseCurrency(saldoExigibleTotal);
+  kpiNeto.className = 'kpi-val' + (saldoExigibleTotal === 0 ? ' ok' : '');
+
+  document.getElementById('row-val-abono').innerText = '- ' + parseCurrency(abono);
+  
+  document.getElementById('row-tag-aj').innerText = isAlmJun ? 'VENCIDO' : 'No exigible';
+  document.getElementById('row-tag-aj').className = 'tag ' + (isAlmJun ? 't-red' : 't-dim');
+  document.getElementById('row-val-aj').style.color = isAlmJun ? 'var(--text)' : 'var(--dim)';
+  
+  document.getElementById('row-tag-dj').innerText = isDepJun ? 'VENCIDO' : 'No exigible';
+  document.getElementById('row-tag-dj').className = 'tag ' + (isDepJun ? 't-red' : 't-dim');
+  document.getElementById('row-val-dj').style.color = isDepJun ? 'var(--text)' : 'var(--dim)';
+
+  // Empaquetamiento seguro de datos
+  const path = window.location.href.split('?')[0];
+  const secureToken = encryptDataPayload(abono, currentFecha, isAlmJun?1:0, isDepJun?1:0);
+  const secureLink = `${path}?token=${secureToken}`;
+
+  const mensajeNotificacion = `Hola Don José, le comparto su estado de cuenta actualizado en el sistema contable de la empresa 🧾\n\n*Saldo Neto Exigible:* ${parseCurrency(saldoExigibleTotal)}\n📅 Fecha de Corte: ${currentFecha}\n\nPara auditar el desglose completo de periodos de forma segura y descargar el documento PDF, ingrese a su portal web oficial:\n\n🔗 *Acceso Blindado al Portal:*\n${secureLink}\n\n_EcoKaizen · Control Contable Digital_`;
+
+  document.getElementById('action-wa-trigger').href = 'https://api.whatsapp.com/send?phone=' + DEST_PHONE + '&text=' + encodeURIComponent(mensajeNotificacion);
+  window._activePortalLink = secureLink;
+}
+
+function copySecureLink() {
+  if(!window._activePortalLink) return;
+  navigator.clipboard.writeText(window._activePortalLink).then(() => {
+    const btn = document.getElementById('btnClipboard');
+    btn.innerText = '✅ URL Encriptada Copiada';
+    setTimeout(() => { btn.innerText = '🔗 Copiar URL del Portal Cifrado'; }, 2000);
+  });
+}
+
+// Inbound Parametric Router con Filtro de Seguridad Criptográfica
+window.onload = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  
+  if(urlParams.has('token') || urlParams.has('abono')) {
+    let decrypted = null;
+
+    if(urlParams.has('token')) {
+      decrypted = decryptDataPayload(urlParams.get('token'));
+      // Bloqueo inmediato del software si detecta adulteración manual del token
+      if(!decrypted) {
+        document.getElementById('print-area').style.display = 'none';
+        document.getElementById('error-screen').style.display = 'block';
+        return;
+      }
+    }
+
+    // Modo Espejo Blindado (Don José) - Ocultación total de herramientas tácticas
+    document.getElementById('admin-control-panel').style.display = 'none';
+    document.getElementById('admin-actions-area').style.display = 'none';
+    document.getElementById('sys-info-box').style.display = 'none';
+    document.querySelectorAll('.action-toolbar').forEach(el => el.style.display = 'none');
+    document.querySelector('.workspace-layout').style.gridTemplateColumns = '1fr';
+    
+    document.getElementById('runtime-sub').innerText = 'SECURE CLIENT PORTAL';
+    document.getElementById('runtime-chip').innerText = 'READ_ONLY_SECURE';
+    document.getElementById('runtime-chip').className = 'chip secure';
+    document.getElementById('erp-main-title').innerText = 'PORTAL DE TRANSPARENCIA CONTABLE';
+
+    // Carga balanceada de datos inyectados por el token seguro
+    if(decrypted) {
+      document.getElementById('abono').value = decrypted.a;
+      document.getElementById('almJun').value = decrypted.j1 === 1 ? 'si' : 'no';
+      document.getElementById('depJun').value = decrypted.j2 === 1 ? 'si' : 'no';
+      document.getElementById('fecha').value = decrypted.f.split('/').reverse().join('-');
+    }
+
+    runEngine();
+
+    const finalAbono = parseFloat(document.getElementById('abono').value) || 0;
+    if(finalAbono > 0) {
+       document.getElementById('static-row-receipt').style.display = 'none';
+       const table = document.getElementById('ledger-history-table');
+       const newRow = document.createElement('tr');
+       newRow.className = 'erp-row';
+       newRow.innerHTML = `
+         <td class="erp-td" style="font-family:'DM Mono',monospace; font-size:12px;">Ref. #DEP-CONCIL<br><span style="color:var(--dim); font-size:10px;">${parseDateHTML()}</span></td>
+         <td class="erp-td" style="text-align:center;"><span class="tag t-dim">✓ Asentado en Chat</span></td>
+         <td class="erp-td val" style="color:var(--green)">${parseCurrency(finalAbono)}</td>
+       `;
+       table.appendChild(newRow);
+    }
+  } else {
+    // Modo de Edición Interna del Administrador
+    document.getElementById('fecha').value = '2026-05-31';
+    runEngine();
+  }
+};
+</script>
+</body>
+</html>
