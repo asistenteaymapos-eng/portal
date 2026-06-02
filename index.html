@@ -250,7 +250,6 @@ body{
 .lr:last-child{border-bottom:none}
 .lr:hover{background:rgba(255,255,255,0.015)}
 
-/* left accent line per row */
 .lr::before{
   content:'';position:absolute;left:0;top:8px;bottom:8px;
   width:2px;border-radius:2px;opacity:0;
@@ -372,14 +371,14 @@ body{
 /* Upload zone */
 .upload-zone{
   background:rgba(0,229,255,0.02);border:1px dashed var(--b2);
-  border-radius:10px;padding:14px;text-align:center;cursor:pointer;
-  transition:border-color 0.2s,background 0.2s;margin-top:10px;
+  border-radius:10px;padding:10px;margin-top:10px;
 }
-.upload-zone:hover{border-color:var(--cyan);background:rgba(0,229,255,0.04)}
-.upload-zone label{
-  font-family:'DM Mono',monospace;font-size:11px;color:var(--cyan);
-  cursor:pointer;display:block;letter-spacing:0.5px;
+.upload-zone input{
+  background:rgba(16,32,63,0.8);border:1px solid var(--b2);border-radius:8px;
+  padding:8px 12px;color:var(--txt);font-family:'Outfit',sans-serif;font-size:13px;
+  width:100%;transition:all 0.2s;
 }
+.upload-zone input:focus{outline:none;border-color:var(--cyan)}
 
 /* ── BTNS ── */
 .btn-wa{
@@ -485,13 +484,6 @@ body{
   from{opacity:0;transform:translateY(18px)}
   to{opacity:1;transform:translateY(0)}
 }
-.d1{animation-delay:0.1s}
-.d2{animation-delay:0.2s}
-.d3{animation-delay:0.3s}
-.d4{animation-delay:0.4s}
-.d5{animation-delay:0.5s}
-.d6{animation-delay:0.6s}
-.d7{animation-delay:0.7s}
 
 /* scrollbar */
 ::-webkit-scrollbar{width:3px}
@@ -502,14 +494,13 @@ body{
 .voucher-btn{
   display:inline-flex;align-items:center;gap:4px;
   font-family:'DM Mono',monospace;font-size:10px;
-  color:var(--blue);background:rgba(74,144,255,0.08);
-  border:1px solid rgba(74,144,255,0.2);
+  color:var(--gold);background:rgba(217,217,0,0.08);
+  border:1px solid rgba(217,217,0,0.2);
   padding:3px 9px;border-radius:5px;cursor:pointer;
   transition:all 0.15s;
 }
-.voucher-btn:hover{background:rgba(74,144,255,0.15);color:var(--cyan)}
+.voucher-btn:hover{background:rgba(217,217,0,0.15);color:#fff}
 
-/* SYS note */
 .sys-note{
   margin:14px 20px 0;
   background:rgba(74,144,255,0.03);border:1px solid rgba(74,144,255,0.1);
@@ -563,7 +554,7 @@ body{
           <div class="h-logo">EK</div>
           <div>
             <div class="h-name">ECOKAIZEN</div>
-            <div class="h-desc" id="h-desc-txt">CONTROL INMOBILIARIO · SISTEMA CONTABLE</div>
+            <div class="h-desc" id="h-desc-txt">CONTROL INMOBILIARIO · SINCRO GENERAL</div>
           </div>
         </div>
         <div class="status-pill" id="status-pill">
@@ -572,18 +563,18 @@ body{
         </div>
       </div>
 
-      <div class="h-saldo-label">Saldo neto exigible</div>
+      <div class="h-saldo-label">Saldo neto exigible hoy</div>
       <div class="h-saldo-amt" id="hero-neto">
-        <span class="h-saldo-cur">S/</span><span id="hero-neto-val">9,400.00</span>
+        <span class="h-saldo-cur">S/</span><span id="hero-neto-val">8,100.00</span>
       </div>
       <div class="h-saldo-sub" id="hero-sub">Deuda activa — requiere regularización</div>
 
       <div class="prog-wrap">
-        <div class="prog-fill" id="prog-fill" style="width:78%"></div>
+        <div class="prog-fill" id="prog-fill" style="width:67%"></div>
       </div>
       <div class="prog-meta">
-        <span id="prog-label-l">Regularización en curso</span>
-        <span id="prog-label-r">78% deuda activa</span>
+        <span id="prog-label-l">Regularización de palabra en curso</span>
+        <span id="prog-label-r">67% deuda activa</span>
       </div>
     </div>
   </div>
@@ -592,20 +583,20 @@ body{
   <div class="kpi-strip">
     <div class="kc almacen">
       <div class="kc-ico">🏢</div>
-      <div class="kc-lbl">Almacén</div>
-      <div class="kc-val" id="kpi-alm">8,200</div>
+      <div class="kc-lbl">Almacén Acum.</div>
+      <div class="kc-val" id="kpi-alm">6,900</div>
       <div class="kc-tag kt-red">⚠ Vencido</div>
     </div>
     <div class="kc depto">
       <div class="kc-ico">🏠</div>
       <div class="kc-lbl">Departamento</div>
-      <div class="kc-val" id="kpi-dep">1,200</div>
-      <div class="kc-tag kt-red">⚠ Vencido</div>
+      <div class="kc-val" id="kpi-dep">0</div>
+      <div class="kc-tag kt-green">✓ Al Día</div>
     </div>
   </div>
 
   <!-- ADMIN PANEL (oculto en modo cliente) -->
-  <div class="sec d2" id="sec-admin" style="animation:riseIn 0.7s ease both">
+  <div class="sec" id="sec-admin" style="animation:riseIn 0.7s ease both">
     <div class="sec-hd">
       <div class="sec-title">Terminal de Entrada</div>
       <div class="sec-line"></div>
@@ -617,20 +608,20 @@ body{
           <input type="date" id="f-fecha" onchange="engine()">
         </div>
         <div class="field">
-          <label>Abono (S/)</label>
+          <label>Abono Recibido (S/)</label>
           <input type="number" id="f-abono" value="0" min="0" placeholder="0.00" oninput="engine()">
         </div>
       </div>
       <div class="fields-grid">
         <div class="field">
-          <label>Almacén Julio (11/07)</label>
+          <label>Almacén Junio (11/06)</label>
           <select id="f-alm-jul" onchange="engine()">
             <option value="no">⏳ No exigible</option>
             <option value="si">⚠️ Vencido +2,000</option>
           </select>
         </div>
         <div class="field">
-          <label>Depto Julio (19/07)</label>
+          <label>Depto Junio (19/06)</label>
           <select id="f-dep-jul" onchange="engine()">
             <option value="no">⏳ No exigible</option>
             <option value="si">⚠️ Vencido +1,200</option>
@@ -638,14 +629,14 @@ body{
         </div>
       </div>
       <div class="upload-zone">
-        <label style="margin-bottom:6px;display:block;font-family:'DM Mono',monospace;font-size:10px;color:var(--cyan);letter-spacing:0.5px">🔗 URL FOTO VOUCHER (imgbb.com)</label>
-        <input type="text" id="f-receipt-url" placeholder="Ej: https://ibb.co/XyZ123" oninput="engine()">
+        <label style="margin-bottom:6px; display:block">🔗 URL de Foto de Voucher (Soporta visor o link directo)</label>
+        <input type="text" id="f-receipt-url" placeholder="Pegue aquí el enlace que le dé ImgBB" oninput="engine()">
       </div>
     </div>
   </div>
 
   <!-- DETALLE DE OBLIGACIONES -->
-  <div class="sec d3" style="animation:riseIn 0.7s ease both">
+  <div class="sec" style="animation:riseIn 0.7s ease both">
     <div class="sec-hd">
       <div class="sec-title">Detalle de Obligaciones</div>
       <div class="sec-line"></div>
@@ -655,44 +646,44 @@ body{
       <div class="lr overdue">
         <div class="lr-ico ico-red">🏢</div>
         <div class="lr-body">
-          <div class="lr-title">Almacén — Acum. + Junio</div>
-          <div class="lr-sub">Deuda histórica vencida</div>
+          <div class="lr-title">Almacén — Historial + Mayo</div>
+          <div class="lr-sub">Deuda acumulada vencida</div>
         </div>
         <div class="lr-right">
-          <div class="lr-amt amt-red">S/ 8,200.00</div>
+          <div class="lr-amt amt-red">S/ 6,900.00</div>
           <div class="kc-tag kt-red" style="margin-top:4px">EXIGIBLE</div>
         </div>
       </div>
-      <!-- Almacén julio -->
+      <!-- Almacén junio -->
       <div class="lr dim-row" id="lr-alm-jul">
         <div class="lr-ico ico-dim" id="lr-alm-jul-ico">🏢</div>
         <div class="lr-body">
-          <div class="lr-title" id="lr-alm-jul-title" style="color:var(--dim)">Almacén — Julio 2026</div>
-          <div class="lr-sub">Vence 11/07/2026</div>
+          <div class="lr-title" id="lr-alm-jul-title" style="color:var(--dim)">Almacén — Junio 2026</div>
+          <div class="lr-sub">Vence 11/06/2026</div>
         </div>
         <div class="lr-right">
           <div class="lr-amt amt-dim">S/ 2,000.00</div>
           <div class="kc-tag kt-dim" id="lr-alm-jul-tag" style="margin-top:4px">No exigible</div>
         </div>
       </div>
-      <!-- Depto junio -->
-      <div class="lr overdue">
-        <div class="lr-ico ico-amber">🏠</div>
+      <!-- Depto mayo -->
+      <div class="lr ok">
+        <div class="lr-ico ico-green">🏠</div>
         <div class="lr-body">
-          <div class="lr-title">Depto — Junio 2026</div>
-          <div class="lr-sub">Venció 19/06/2026</div>
+          <div class="lr-title">Depto — Mayo 2026</div>
+          <div class="lr-sub">Venció 19/05/2026</div>
         </div>
         <div class="lr-right">
-          <div class="lr-amt amt-red">S/ 1,200.00</div>
-          <div class="kc-tag kt-red" style="margin-top:4px">EXIGIBLE</div>
+          <div class="lr-amt amt-green">S/ 0.00</div>
+          <div class="kc-tag kt-green" style="margin-top:4px">LIQUIDADO</div>
         </div>
       </div>
-      <!-- Depto julio -->
+      <!-- Depto junio -->
       <div class="lr dim-row" id="lr-dep-jul">
         <div class="lr-ico ico-dim" id="lr-dep-jul-ico">🏠</div>
         <div class="lr-body">
-          <div class="lr-title" id="lr-dep-jul-title" style="color:var(--dim)">Depto — Julio 2026</div>
-          <div class="lr-sub">Vence 19/07/2026</div>
+          <div class="lr-title" id="lr-dep-jul-title" style="color:var(--dim)">Depto — Junio 2026</div>
+          <div class="lr-sub">Vence 19/06/2026</div>
         </div>
         <div class="lr-right">
           <div class="lr-amt amt-dim">S/ 1,200.00</div>
@@ -726,60 +717,60 @@ body{
   </div>
 
   <!-- TOTALES -->
-  <div class="sec d4" style="animation:riseIn 0.7s ease both">
+  <div class="sec" style="animation:riseIn 0.7s ease both">
     <div class="totals-block">
       <div class="tot-row">
         <span class="lbl">Deuda bruta total</span>
-        <span class="val" id="tot-bruto">S/ 9,400.00</span>
+        <span class="val" id="tot-bruto">S/ 8,100.00</span>
       </div>
       <div class="tot-row">
-        <span class="lbl">(-) Abono aplicado</span>
+        <span class="lbl">(-) Amortización en curso</span>
         <span class="val green" id="tot-abono">- S/ 0.00</span>
       </div>
       <div class="tot-sep"></div>
       <div class="tot-main">
         <div class="lbl">SALDO NETO EXIGIBLE</div>
-        <div class="val" id="tot-neto">S/ 9,400.00</div>
+        <div class="val" id="tot-neto">S/ 8,100.00</div>
       </div>
     </div>
   </div>
 
   <!-- PLAN DE REGULARIZACIÓN -->
-  <div class="sec d5" style="animation:riseIn 0.7s ease both">
+  <div class="sec" style="animation:riseIn 0.7s ease both">
     <div class="sec-hd">
       <div class="sec-title">Plan de Regularización</div>
       <div class="sec-line"></div>
     </div>
     <div class="plan-card">
       <div class="plan-row">
-        <span class="plan-lbl">Pago semanal (miércoles)</span>
+        <span class="plan-lbl">Abono regular semanal fijado</span>
         <span class="plan-val cyan">S/ 980.00</span>
       </div>
       <div class="plan-row">
-        <span class="plan-lbl">↳ Almacén mensual</span>
+        <span class="plan-lbl">↳ Cuota Almacén</span>
         <span class="plan-val">S/ 500.00</span>
       </div>
       <div class="plan-row">
-        <span class="plan-lbl">↳ Depto mensual</span>
+        <span class="plan-lbl">↳ Cuota Departamento</span>
         <span class="plan-val">S/ 300.00</span>
       </div>
       <div class="plan-row">
-        <span class="plan-lbl">↳ Amortización atraso</span>
+        <span class="plan-lbl">↳ Amortización deuda atrasada</span>
         <span class="plan-val">S/ 180.00</span>
       </div>
       <div class="plan-row">
-        <span class="plan-lbl">Proyección liquidación</span>
+        <span class="plan-lbl">Proyección balance cero</span>
         <span class="plan-val" style="color:var(--cyan)">Marzo 2027</span>
       </div>
       <div class="plan-row">
-        <span class="plan-lbl">Saldo exigible actual</span>
-        <span class="plan-val red" id="plan-neto">S/ 9,400.00</span>
+        <span class="plan-lbl">Deuda exigible calculada</span>
+        <span class="plan-val red" id="plan-neto">S/ 8,100.00</span>
       </div>
     </div>
   </div>
 
   <!-- TIMELINE -->
-  <div class="sec d6" style="animation:riseIn 0.7s ease both">
+  <div class="sec" style="animation:riseIn 0.7s ease both">
     <div class="sec-hd">
       <div class="sec-title">Historial de Movimientos</div>
       <div class="sec-line"></div>
@@ -789,55 +780,39 @@ body{
         <div class="tl-dot done">✓</div>
         <div class="tl-body">
           <div class="tl-title">Depto Mayo — Liquidado</div>
-          <div class="tl-date">Pagado el 19/05/2026</div>
-          <div class="tl-amt" style="color:var(--green)">S/ 1,200.00</div>
-        </div>
-      </div>
-      <div class="tli">
-        <div class="tl-dot done">✓</div>
-        <div class="tl-body">
-          <div class="tl-title">Amortización atraso — Pagado</div>
-          <div class="tl-date">13/05/2026</div>
-          <div class="tl-amt" style="color:var(--green)">S/ 180.00</div>
+          <div class="tl-date">Conciliado con éxito</div>
+          <div class="tl-amt" style="color:var(--green)">S/ 1,200.00 liquidado</div>
         </div>
       </div>
       <div class="tli">
         <div class="tl-dot alert">!</div>
         <div class="tl-body">
-          <div class="tl-title">Almacén Junio — Pendiente</div>
-          <div class="tl-date">Venció 11/06/2026</div>
-          <div class="tl-amt" style="color:var(--red)">S/ 2,000.00 pendiente</div>
-        </div>
-      </div>
-      <div class="tli">
-        <div class="tl-dot alert">!</div>
-        <div class="tl-body">
-          <div class="tl-title">Depto Junio — Pendiente</div>
-          <div class="tl-date">Venció 19/06/2026</div>
-          <div class="tl-amt" style="color:var(--red)">S/ 1,200.00 pendiente</div>
+          <div class="tl-title">Almacén Historial — Pendiente</div>
+          <div class="tl-date">Corte Contable Mayo</div>
+          <div class="tl-amt" style="color:var(--red)">S/ 6,900.00 exigible</div>
         </div>
       </div>
       <div class="tli">
         <div class="tl-dot next">○</div>
         <div class="tl-body">
-          <div class="tl-title" style="color:var(--muted)">Almacén Julio</div>
-          <div class="tl-date">Vence 11/07/2026</div>
-          <div class="tl-amt" style="color:var(--dim)">S/ 2,000.00</div>
+          <div class="tl-title" style="color:var(--muted)">Almacén Junio</div>
+          <div class="tl-date">Vence 11/06/2026</div>
+          <div class="tl-amt" style="color:var(--dim)">S/ 2,000.00 entrante</div>
         </div>
       </div>
       <div class="tli">
         <div class="tl-dot next">○</div>
         <div class="tl-body">
-          <div class="tl-title" style="color:var(--muted)">Depto Julio</div>
-          <div class="tl-date">Vence 19/07/2026</div>
-          <div class="tl-amt" style="color:var(--dim)">S/ 1,200.00</div>
+          <div class="tl-title" style="color:var(--muted)">Depto Junio</div>
+          <div class="tl-date">Vence 19/06/2026</div>
+          <div class="tl-amt" style="color:var(--dim)">S/ 1,200.00 entrante</div>
         </div>
       </div>
     </div>
   </div>
 
   <!-- ACCIONES ADMIN -->
-  <div class="sec d5" id="sec-actions" style="animation:riseIn 0.7s ease both">
+  <div class="sec" id="sec-actions" style="animation:riseIn 0.7s ease both">
     <div class="sec-hd">
       <div class="sec-title">Despachar a Don José</div>
       <div class="sec-line"></div>
@@ -853,7 +828,7 @@ body{
   </div>
 
   <div class="sys-note" id="sys-note">
-    <strong>Seguridad:</strong> Los datos se empaquetan en un token cifrado Base64. Si el receptor intenta alterar la URL manualmente, el sistema mostrará pantalla de error de seguridad.
+    <strong>Seguridad SaaS:</strong> Los datos se empaquetan en un token cifrado Base64. Si el receptor intenta alterar la URL manualmente, el sistema mostrará pantalla de error de seguridad.
   </div>
 
   <!-- FIRMA -->
@@ -861,22 +836,21 @@ body{
     <div class="firma-logo">EK</div>
     <div class="firma-name">ECOKAIZEN</div>
     <div class="firma-sub">
-      Sistema de Control Inmobiliario<br>
-      Transparencia · Orden · Confianza
+      Arrendador: Don José<br>
+      Transparencia · Orden · Confianza Financiera
     </div>
-    <div class="firma-seal">🛡️ PORTAL OFICIAL · TOKEN CIFRADO</div>
+    <div class="firma-seal">🛡️ PORTAL OFICIAL · PROPIETARIO</div>
   </div>
 
 </div><!-- /app -->
 
 <script>
-// ── CONFIG ──
-const WA_NUM     = '51949546919'; // Número de prueba
+const WA_NUM     = '51949546919'; 
 const SALT       = 'EK_SALT_2026';
-const BASE_ALM   = 8200;
-const BASE_DEP   = 1200;
-const MAX_DEUDA  = 12000;
-// ── UTILS ──
+const BASE_ALM   = 6900; 
+const BASE_DEP   = 0;    
+const MAX_DEUDA  = 11300; 
+
 function fc(n){ return 'S/ '+n.toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2}) }
 function hoy(){
   const d=new Date();
@@ -888,9 +862,26 @@ function fechaInput(){
   const p=v.split('-'); return p[2]+'/'+p[1]+'/'+p[0];
 }
 
+// ── LIMPIADOR INTELIGENTE DE ENLACES DE IMGBB ──
+function cleanImageUrl(rawUrl) {
+  let url = rawUrl.trim();
+  if(!url) return "";
+  
+  // Si el personal pegó el link del visor normal de ImgBB (ej: https://ibb.co/XyZ123)
+  if (url.includes("ibb.co/") && !url.includes("i.ibb.co")) {
+    // Truco de ingeniería para forzar que cargue la imagen real sin romper el token
+    let parts = url.split("ibb.co/");
+    if(parts[1]) {
+      // Retornamos el formato estructurado directo que usa el CDN de ImgBB
+      return "https://i.ibb.co/" + parts[1] + "/image.png";
+    }
+  }
+  return url;
+}
+
 // ── TOKEN CRYPT ──
 function encrypt(abono,fecha,aj,dj,vUrl){
-  return btoa(JSON.stringify({a:abono,f:fecha,aj:aj?1:0,dj:dj?1:0,v:vUrl||'',s:SALT}));
+  return btoa(JSON.stringify({a:abono,f:fecha,aj:aj?1:0,dj:dj?1:0,v:vUrl||"",s:SALT}));
 }
 function decrypt(tok){
   try{
@@ -923,7 +914,6 @@ function decrypt(tok){
       ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
       ctx.fillStyle=`rgba(212,175,55,${p.a})`;
       ctx.fill();
-      // connect nearby
       pts.forEach(q=>{
         const dx=p.x-q.x,dy=p.y-q.y,dist=Math.sqrt(dx*dx+dy*dy);
         if(dist<120){
@@ -963,9 +953,12 @@ function countTo(el,target,decimal=true,delay=400){
 // ── ENGINE ──
 function engine(){
   const abono  = parseFloat(document.getElementById('f-abono').value)||0;
-  const almJul = document.getElementById('f-alm-jul').value==='si';
-  const depJul = document.getElementById('f-dep-jul').value==='si';
-  const vUrl   = (document.getElementById('f-receipt-url') ? document.getElementById('f-receipt-url').value.trim() : '');
+  const almJun = document.getElementById('f-alm-jul').value==='si';
+  const depJun = document.getElementById('f-dep-jul').value==='si';
+  
+  // Procesamos y limpiamos el enlace de forma automatizada
+  const rawUrl = document.getElementById('f-receipt-url').value;
+  const vUrl   = cleanImageUrl(rawUrl);
   const fecha  = fechaInput();
 
   const extraAlm = almJul?2000:0;
@@ -975,27 +968,23 @@ function engine(){
   const bruto    = subtAlm+subtDep;
   const neto     = Math.max(0,bruto-abono);
 
-  // KPIs
   document.getElementById('kpi-alm').innerText = subtAlm.toLocaleString('es-PE');
   document.getElementById('kpi-dep').innerText = subtDep.toLocaleString('es-PE');
 
-  // Hero
   const heroEl = document.getElementById('hero-neto-val');
   countTo(heroEl,neto,true,0);
   const heroEl2 = document.getElementById('hero-neto');
   heroEl2.className='h-saldo-amt'+(neto===0?' ok':'');
   document.getElementById('hero-sub').className='h-saldo-sub'+(neto===0?' ok':'');
   document.getElementById('hero-sub').innerText = neto===0
-    ? '¡Sin deuda pendiente — al día!'
+    ? '¡Cuentas al día — Balance liquidado!'
     : 'Deuda activa — requiere regularización';
 
-  // Progress
   const pct = neto===0?0:Math.min(100,Math.round((neto/MAX_DEUDA)*100));
   document.getElementById('prog-fill').style.width = pct+'%';
   document.getElementById('prog-fill').className = 'prog-fill'+(pct<40?' low':'');
-  document.getElementById('prog-label-r').innerText = pct+'% deuda activa';
+  document.getElementById('prog-label-r').innerText = pct+'% deuda de palabra';
 
-  // Almacén julio row
   const laj=document.getElementById('lr-alm-jul');
   const lajT=document.getElementById('lr-alm-jul-title');
   const lajTag=document.getElementById('lr-alm-jul-tag');
@@ -1010,7 +999,6 @@ function engine(){
     lajIco.className='lr-ico ico-dim';
   }
 
-  // Depto julio row
   const ldj=document.getElementById('lr-dep-jul');
   const ldjT=document.getElementById('lr-dep-jul-title');
   const ldjTag=document.getElementById('lr-dep-jul-tag');
@@ -1025,7 +1013,6 @@ function engine(){
     ldjIco.className='lr-ico ico-dim';
   }
 
-  // Abono row
   if(abono>0){
     document.getElementById('lr-abono').style.display='flex';
     document.getElementById('lr-abono-val').innerText='- '+fc(abono);
@@ -1034,7 +1021,6 @@ function engine(){
     document.getElementById('lr-abono').style.display='none';
   }
 
-  // Voucher row
   if(vUrl){
     document.getElementById('lr-voucher').style.display='flex';
     document.getElementById('lr-voucher-fecha').innerText=fecha;
@@ -1043,7 +1029,6 @@ function engine(){
     document.getElementById('lr-voucher').style.display='none';
   }
 
-  // Totals
   document.getElementById('tot-bruto').innerText=fc(bruto);
   document.getElementById('tot-abono').innerText='- '+fc(abono);
   const totNetoEl=document.getElementById('tot-neto');
@@ -1052,30 +1037,26 @@ function engine(){
 
   document.getElementById('plan-neto').innerText=fc(neto);
 
-  // Build token & WA link
   const token = encrypt(abono,fecha,almJul,depJul,vUrl);
   const base  = window.location.href.split('?')[0];
   const link  = base+'?token='+token;
   window._portalLink = link;
 
   const msg =
-`Hola Don José, le comparto su portal de estado de cuenta actualizado 🧾
+`Hola Don José, le comparto su estado de cuenta actualizado en el sistema de la empresa 🧾
 
-*Saldo exigible:* ${fc(neto)}
-📅 Corte: ${fecha}
+*Saldo Neto Exigible:* ${fc(neto)}
+📅 Corte Contable: ${fecha}
 
-🔗 Ingrese aquí para ver el desglose completo:
-${link}
+Para revisar el desglose total de periodos de forma segura y ver las imágenes de los comprobantes, ingrese a su portal interactivo seguro desde este enlace:
+🔗 ${link}
 
-_EcoKaizen · Control Contable Digital_`;
+_EcoKaizen · Control Inmobiliario_`;
 
   document.getElementById('btn-wa').href=
     'https://api.whatsapp.com/send?phone='+WA_NUM+'&text='+encodeURIComponent(msg);
 }
 
-// URL voucher handled inline in engine()
-
-// ── MODAL ──
 function openModal(src){
   document.getElementById('modal-img').src=src;
   document.getElementById('modal').classList.add('open');
@@ -1084,7 +1065,6 @@ function closeModal(){
   document.getElementById('modal').classList.remove('open');
 }
 
-// ── COPY ──
 function copyLink(){
   if(!window._portalLink) return;
   navigator.clipboard.writeText(window._portalLink).then(()=>{
@@ -1094,9 +1074,7 @@ function copyLink(){
   });
 }
 
-// ── INIT ──
 window.onload=()=>{
-  // set today date
   const h=new Date();
   document.getElementById('f-fecha').value=
     h.getFullYear()+'-'+String(h.getMonth()+1).padStart(2,'0')+'-'+String(h.getDate()).padStart(2,'0');
@@ -1106,13 +1084,12 @@ window.onload=()=>{
   if(params.has('token')){
     const data=decrypt(params.get('token'));
     if(!data){
-      // SECURITY ERROR
       document.getElementById('main-app').style.display='none';
       document.getElementById('err-screen').style.display='flex';
       document.getElementById('splash').classList.add('out');
       return;
     }
-    // CLIENT MODE — hide admin controls
+    // CLIENT MODE
     document.getElementById('sec-admin').style.display='none';
     document.getElementById('sec-actions').style.display='none';
     document.getElementById('sys-note').style.display='none';
@@ -1120,13 +1097,13 @@ window.onload=()=>{
     const pill=document.getElementById('status-pill');
     pill.classList.add('secure');
     document.getElementById('pill-txt').innerText='PORTAL SEGURO';
-    document.getElementById('h-desc-txt').innerText='ESTADO DE CUENTA · SOLO LECTURA';
+    document.getElementById('h-desc-txt').innerText='ESTADO DE CUENTA · PROPIETARIO';
 
-    // inject data
     document.getElementById('f-abono').value=data.a;
     document.getElementById('f-alm-jul').value=data.aj===1?'si':'no';
     document.getElementById('f-dep-jul').value=data.dj===1?'si':'no';
-    if(document.getElementById('f-receipt-url') && data.v) document.getElementById('f-receipt-url').value=data.v;
+    document.getElementById('f-receipt-url').value=data.v||"";
+    
     const fp=data.f.split('/');
     document.getElementById('f-fecha').value=fp[2]+'-'+fp[1]+'-'+fp[0];
     engine();
@@ -1134,7 +1111,6 @@ window.onload=()=>{
     engine();
   }
 
-  // splash out after 2s
   setTimeout(()=>{
     document.getElementById('splash').classList.add('out');
   },2100);
